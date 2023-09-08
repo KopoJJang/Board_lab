@@ -10,7 +10,7 @@ import lombok.*;
 @Getter
 @ToString(exclude = "writer")   // writer 제외한 객체 정보에 대한 문자열
 
-public class Board extends BaseEntity{
+public class Board extends BaseEntity {
     // primary-key, bno 자동증가
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,4 +26,11 @@ public class Board extends BaseEntity{
     @ManyToOne
     private Member writer;  // 실제 board 테이블에는 writer_email 컬럼이 생성되고 FK(Member 테이블의 email 컬럼값만 참조하기 위해) 설정됨
 
+    public void changeTitle(String title) {
+        this.title = title;
+    }
+
+    public void changeContent(String content) {
+        this.content = content;
+    }
 }

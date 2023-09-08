@@ -1,11 +1,13 @@
 package kr.ac.kopo.board.service;
 
+import jakarta.transaction.Transactional;
 import kr.ac.kopo.board.dto.BoardDTO;
 import kr.ac.kopo.board.dto.PageRequestDTO;
 import kr.ac.kopo.board.dto.PageResultDTO;
 import kr.ac.kopo.board.entity.Board;
 import kr.ac.kopo.board.entity.Member;
 import kr.ac.kopo.board.repository.BoardRepository;
+import kr.ac.kopo.board.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -22,6 +24,7 @@ import java.util.function.Function;
 public class BoardServiceImpl implements BoardService{
 
     private final BoardRepository repository; // final 객체 참조값 자동 주입 받기 위해
+    private final ReplyRepository replyRepository;
 
     @Override
     public Long register(BoardDTO dto){
@@ -41,6 +44,34 @@ public class BoardServiceImpl implements BoardService{
         Page<Object[]> result = repository.getBoardWithReplyCount(pageRequestDTO.getPageable(Sort.by("bno").descending()));
 
         return new PageResultDTO<>(result, fn);
+    }
+
+    @Override
+    public BoardDTO get(Long bno){
+        Object result = repository.getBoardByBno(bno);
+        Object[] arr = (Object[]) result;
+
+        return entityToDTO((Board)arr[0], (Member)arr[1], (Long)arr[2]);
+    }
+
+    // 댓글 삭제와 원글 삭제를 같이 하기 위해
+    @Transactional
+    @Override
+    public void removeWithReplies(Long bno) {
+        // 댓글 삭제
+        replyRepository.deleteByBno(bno);
+        // 원글 삭제
+        repository.deleteById(bno);
+    }
+
+    @Transactional
+    @Override
+    public void modify(BoardDTO boardDTO) {
+        Board board = repository.getReferenceById(boardDTO.getBno());
+//        Board board = repository.getOne(boardDTO.getBno());
+        board.changeTitle(boardDTO.getTitle());
+        board.changeContent(boardDTO.getContent());
+        repository.save(board);
     }
 
 }
