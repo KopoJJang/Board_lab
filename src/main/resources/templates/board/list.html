@@ -4,35 +4,34 @@
 <th:block th:replace="~{/layout/basic :: setContent(~{this::content})}">
   <th:block th:fragment="content">
     <h1 class="mt-4">Board List Page
-    <a th:href="@{/board/register}">
-      <button type="button" class="btn btn-outline-primary">REGISTER</button>
-    </a>
+      <a th:href="@{/board/register}">
+        <button  type="button" class="btn btn-outline-primary">REGISTER</button>
+      </a>
     </h1>
-
     <form action="/board/list" method="get" id="searchForm">
       <div class="input-group">
-        <input type="hidden" name="page" value="1">
+        <input type="hidden" name="page" th:value="1">
         <div class="input-group-sm">
           <select class="form-select-sm" name="type">
-            <option th:selected="${pageRequestDTO.type == null}">---------------</option>
+            <option th:selected="${pageRequestDTO.type == null}">----------------------</option>
             <option th:selected="${pageRequestDTO.type == 't'}" value="t">제목</option>
             <option th:selected="${pageRequestDTO.type == 'c'}" value="c">내용</option>
             <option th:selected="${pageRequestDTO.type == 'w'}" value="w">작성자</option>
             <option th:selected="${pageRequestDTO.type == 'tc'}" value="tc">제목 + 내용</option>
-            <option th:selected="${pageRequestDTO.type == 'tcw'}" value="tcw">제목 + 내용 + 작성자</option>
+            <option th:selected="${pageRequestDTO.type == 'tcw'}" value="t">제목 + 내용 + 작성자</option>
           </select>
         </div>
-        <input class="form-control-sm" name="keyword" th:value="${pageRequestDTO.keyword}">
+        <input class="form-control" name="keyword" th:value="${pageRequestDTO.keyword}">
         <div class="input-group-sm" id="button-addon4">
           <button class="btn btn-outline-secondary btn-search">Search</button>
-          <button class="btn btn-outline-secondary btn-clear">Clear</button>
+          <button  class="btn btn-outline-secondary btn-clear">Clear</button>
         </div>
       </div>
     </form>
     <table class="table table-striped">
       <thead>
       <tr>
-        <th scope="col">number</th>
+        <th scope="col">Gno</th>
         <th scope="col">Title</th>
         <th scope="col">Writer</th>
         <th scope="col">RegDate</th>
@@ -41,40 +40,44 @@
       <tbody>
       <tr th:each="dto : ${result.dtoList}">
         <th scope="row">
-          <a th:href="@{/board/read(bno=${dto.bno}, page=${result.page}, type=${pageRequestDTO.type}, keyword=${pageRequestDTO.keyword})}">
-          [[${dto.bno}]]
+          <a th:href="@{/board/read(bno=${dto.bno}, page=${result.page}, size=${result.size}, type=${pageRequestDTO.type}, keyword=${pageRequestDTO.keyword})}">
+            [[${dto.bno}]]
           </a>
         </th>
-        <td>[[${dto.title}]]-----------[<b th:text="${dto.replyCount}"></b>]</td>
-        <td>[[${dto.writerName}]]</td>
-        <td>[[${#temporals.format(dto.regDate, 'yyyy/MM/dd')}]]</td>
+        <td>[[${dto.title}]]---------[<b th:text="${dto.replyCount}"></b>]</td>
+        <td>[[${dto.writerEmail}]]</td>
+        <td>[[${dto.regDate}]]</td>
       </tr>
       </tbody>
     </table>
+    <!-- 페이지 번호 추가 -->
     <ul class="pagination h-100 justify-content-center align-items-center">
+      <!-- 이전(Prev) 페이지 버튼 -->
       <li class="page-item" th:if="${result.prev}">
-        <a class="page-link" th:href="@{/board/list(page=${result.start -1}, size=${result.size}, type=${pageRequestDTO.type}, keyword=${pageRequestDTO.keyword})}" tabindex="-1">Previous</a>
+        <a class="page-link" th:href="@{/board/list(page=${result.start - 1}, size=${result.size}, type=${pageRequestDTO.type}, keyword=${pageRequestDTO.keyword})}" tabindex="-1">Previous</a>
       </li>
-      <li th:class="'page-item active' + ${result.page == page?'active':''}" th:each="page: ${result.pageList}">
-        <a th:class="page-link" th:href="@{/board/list(page=${page}, size=${result.size}, type=${pageRequestDTO.type}, keyword=${pageRequestDTO.keyword})}">[[${page}]]</a>
+      <!-- 현재 페이지 목록 리스트 -->
+      <!-- 삼항 연산자로 현재 페이지 리스트가 존재할 경우에만 다 표시. -->
+      <li th:class="'page-item ' + ${result.page == page?'active' : ''}"  th:each="page: ${result.pageList}">
+        <a class="page-link" th:href="@{/board/list(page=${page}, size=${result.size}, type=${pageRequestDTO.type}, keyword=${pageRequestDTO.keyword})}">[[${page}]]</a>
       </li>
+      <!-- 다음(Next) 페이지 버튼 -->
       <li class="page-item" th:if="${result.next}">
-        <a class="page-link" th:href="@{/board/list(page=${result.end +1}, size=${result.size}, type=${pageRequestDTO.type}, keyword=${pageRequestDTO.keyword})}" >Next</a>
+        <a class="page-link" th:href="@{/board/list(page=${result.end + 1}, size=${result.size}, size=${result.size}, type=${pageRequestDTO.type}, keyword=${pageRequestDTO.keyword})}" tabindex="-1">Next</a>
       </li>
     </ul>
     <div class="modal" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">[[${bno}]]</h5>
+            <h5 class="modal-title">[[${msg}]]</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="$('.modal').hide()"></button>
           </div>
           <div class="modal-body">
-            <p>Modal body text goes here.</p>
+            <p>Registered successfully.</p>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"  aria-label="Close" onclick="$('.modal').hide()">Close</button>
-
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="$('.modal').hide()">CONFIRM</button>
           </div>
         </div>
       </div>
@@ -94,7 +97,6 @@
         searchForm.empty().submit();
       });
     </script>
-
   </th:block>
 </th:block>
 </html>

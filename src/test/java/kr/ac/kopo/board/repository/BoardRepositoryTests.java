@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
+
 @SpringBootTest
 public class BoardRepositoryTests {
 
@@ -79,5 +80,18 @@ public class BoardRepositoryTests {
         Object[] arr = (Object[]) result;
         for(Object a : arr)
             System.out.println(a);
+    }
+
+    @Test
+    public void testSearch1(){
+        boardRepository.search1();
+    }
+
+    @Test
+    public void testSearchPage(){
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("bno").descending());
+        Page<Object[]> result = boardRepository.searchPage("t", "1", pageable);
+
+
     }
 }

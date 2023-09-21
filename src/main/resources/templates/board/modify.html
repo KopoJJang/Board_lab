@@ -1,67 +1,75 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>게시판 수정 페이지</title>
+  <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+</head>
+<body>
+<div id="notification" style="display:none;"></div>
 <th:block th:replace="~{/layout/basic :: setContent(~{this::content})}">
   <th:block th:fragment="content">
-    <h1 class="mt-4">GuestBook Modify Page</h1>
-    <form action="/guestbook/modify" method="post">
+    <h1 class="mt-4">게시판 수정 페이지</h1>
+    <form action="/board/modify" method="post">
       <input type="hidden" name="page" th:value="${requestDTO.page}">
       <input type="hidden" name="type" th:value="${requestDTO.type}">
       <input type="hidden" name="keyword" th:value="${requestDTO.keyword}">
       <div class="form-group">
         <label>Gno</label>
-        <input type="text" class="form-control" name="gno" th:value="${dto.gno}" readonly>
+        <input type="text" class="form-control" name="bno" th:value="${dto.bno}"readonly>
       </div>
-
       <div class="form-group">
         <label>Title</label>
         <input type="text" class="form-control" name="title" th:value="${dto.title}">
       </div>
-
       <div class="form-group">
         <label>Content</label>
-        <textarea class="form-control" name="content" rows="5">[[${dto.content}]]</textarea>
+        <textarea class="form-control" name="content" rows="5" >[[${dto.content}]]</textarea>
       </div>
-
-      <div class="form-group">
-        <label>Writer</label>
-        <input type="text" class="form-control" name="writer" th:value="${dto.writer}" readonly>
-      </div>
-
       <div class="form-group">
         <label>RegDate</label>
         <input type="text" class="form-control" name="regdate" rows="5" th:value="${dto.regDate}" readonly>
       </div>
-
       <div class="form-group">
-        <label>ModDate</label>
-        <input type="text" class="form-control" name="moDate" rows="5" th:value="${dto.modDate}" readonly>
+        <label>Writer</label>
+        <input type="text" class="form-control" name="writerName" th:value="${dto.writerName}">
       </div>
-
+      <div class="form-group">
+        <label>MoDate</label>
+        <input type="text" class="form-control" name="modDate" rows="5" th:value="${dto.modDate}" readonly>
+      </div>
     </form>
-    <button type="button" class="btn btn-primary modifyBtn">MODIFY</button>
-    <button type="button" class="btn btn-info listBtn">LIST</button>
-    <button type="button" class="btn btn-danger removeBtn">REMOVE</button>
+    <button type="button" class="btn btn-primary modifyBtn">수정</button>
+    <button type="button" class="btn btn-info listBtn">목록</button>
+    <button type="button" class="btn btn-danger removeBtn">삭제</button>
   </th:block>
 </th:block>
+
 <script th:inline="javascript">
   var actionForm = $("form");
+
   $(".removeBtn").click(function (){
-    actionForm
-            .attr("action", "/guestbook/remove")
-            .attr("method", "post")
-            .submit();
-  })
+    if(confirm("삭제하시겠습니까?")){
+      actionForm
+              .attr("action", "/board/remove")
+              .attr("method", "post")
+              .submit();
+      showNotification("삭제 완료되었습니다.");
+    }
+  });
 
   $(".modifyBtn").click(function (){
-    if(!confirm("수정 하시겠습니까?")){
+    if(!confirm("수정하시겠습니까?")){
       return;
     }
     actionForm
-            .attr("action", "/guestbook/modify")
+            .attr("action", "/board/modify")
             .attr("method", "post")
             .submit();
-  })
+    showNotification("수정 완료되었습니다.");
+  });
+
   $(".listBtn").click(function (){
     var page = $("input[name='page']");
     var type = $("input[name='type']");
@@ -73,9 +81,20 @@
     actionForm.append(keyword);
 
     actionForm
-            .attr("action", "/guestbook/list")
+            .attr("action", "/board/list")
             .attr("method", "get")
             .submit();
-  })
+  });
+
+  function showNotification(message) {
+    var notificationElement = $("#notification");
+    notificationElement.text(message);
+    notificationElement.show();
+
+    setTimeout(function() {
+      notificationElement.hide();
+    }, 3000);
+  }
 </script>
+</body>
 </html>
