@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
 <th:block th:replace="~{/layout/basic :: setContent(~{this::content})}">
   <th:block th:fragment="content">
     <h1 class="mt-4">Board Read Page</h1>
@@ -33,6 +34,27 @@
     <a th:href="@{/board/list(page=${requestDTO.page}, type=${requestDTO.type}, keyword=${requestDTO.keyword})}">
       <button type="button" class="btn btn-info">목록</button>
     </a>
+    <div>
+      <div class="mt-4">
+        <h5>
+          <span class="badge replyCount">Reply Count - [[${dto.replyCount}]] -</span>
+        </h5>
+      </div>
+      <div class="list-group replyList">
+
+      </div>
+    </div>
   </th:block>
 </th:block>
+<script th:inline="javascript">
+  $(document).ready(function (){
+    var bno = [[${dto.bno}]];
+    var listGroup = $(".replyList");
+    $(".replyCount").click(function (){
+      $.getJSON('/replies/board/' + bno, function (arr){
+        console.log(arr);
+      })
+    });
+  });
+</script>
 </html>
