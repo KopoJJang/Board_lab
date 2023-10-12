@@ -3,7 +3,6 @@ package kr.ac.kopo.board.controller;
 import kr.ac.kopo.board.dto.BoardDTO;
 import kr.ac.kopo.board.dto.PageRequestDTO;
 import kr.ac.kopo.board.service.BoardService;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
@@ -23,24 +22,25 @@ public class BoardController {
 
     @GetMapping("/list")
     public void list(PageRequestDTO pageRequestDTO, Model model){
-        log.info("list.........." + pageRequestDTO);
+        log.info("list........." + pageRequestDTO);
         model.addAttribute("result", boardService.getList(pageRequestDTO));
+
     }
 
-    @GetMapping("/register")
+    @GetMapping("register")
     public void register(){
         log.info("register get...");
     }
 
     @PostMapping("/register")
     public String registerPost(BoardDTO dto, RedirectAttributes redirectAttributes){
-        log.info("BoardDTO: " + dto);
+        log.info("BoardDTO: "+dto);
         Long bno = boardService.register(dto);
-        log.info("BNO: " + bno);
+        log.info("BNO: "+bno);
         redirectAttributes.addFlashAttribute("msg", bno);
         return "redirect:/board/list";
-
     }
+
     @GetMapping({"/read", "/modify"})
     public void read(@ModelAttribute("requestDTO") PageRequestDTO pageRequestDTO, Long bno, Model model){
         log.info("bno: " + bno);
@@ -60,12 +60,10 @@ public class BoardController {
     }
 
     @PostMapping("/remove")
-    public String remove(Long bno, RedirectAttributes redirectAttributes) {
-        log.info("bno: " + bno);
+    public String remove(Long bno, RedirectAttributes redirectAttributes){
+        log.info("bno: "+bno);
         boardService.removeWithReplies(bno);
         redirectAttributes.addAttribute("msg", bno);
         return "redirect:/board/list";
     }
 }
-
-

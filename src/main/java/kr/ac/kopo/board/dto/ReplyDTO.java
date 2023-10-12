@@ -7,17 +7,14 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-
+@Data
 public class ReplyDTO {
     private Long rno;
     private String text;
     private String replyer;
     private Long bno;
     private LocalDateTime regDate, modDate;
-
-
 }

@@ -1,5 +1,4 @@
 package kr.ac.kopo.board.dto;
-
 import lombok.Data;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,44 +10,38 @@ import java.util.stream.IntStream;
 
 @Data
 public class PageResultDTO<DTO, EN> {
-    // DTO 목록
+    //  DTO 목록
     private List<DTO> dtoList;
-
-    // 전체 페이지수
+    //  전체 페이지수
     private int totalPage;
-
-    // 현재 페이지 번호
+    //  현재 페이지번호
     private int page;
-
-    // 목록 사이즈
+    //  목록 사이즈
     private int size;
-
-    // 시작 페이지 번호, 끝 페이지 번호(한 화면에 들어가는)
+    //  시작페이지번호, 끝 페이지번호(한 화면에 들어가는)
     private int start, end;
-
-    // 이전, 다음 존재여부(한 화면 단위)
+    //  이전, 다음 존재여부(한 화면단위)
     private boolean prev, next;
-
-    // 페이지 번호 목록
-    private List<Integer>pageList;
-
+    //  페이지 번호 목록
+    private List<Integer> pageList;
     public PageResultDTO(Page<EN> result, Function<EN, DTO> fn){
         dtoList = result.stream().map(fn).collect(Collectors.toList());
-        totalPage = result.getTotalPages(); // 전체 페이지 번호 개수 = 테이블의 Entity 개수
+        totalPage = result.getTotalPages();
         makePageList(result.getPageable());
     }
-
     private void makePageList(Pageable pageable){
         this.page = pageable.getPageNumber() + 1; // 0부터 시작하므로 1을 추가
         this.size = pageable.getPageSize();
 
-        // temp end page
-        int tempEnd = (int)(Math.ceil(page / 10.0)) * 10;
+        //temp end page
+        int tempEnd = (int)(Math.ceil(page/10.0)) * 10;
 
         start = tempEnd - 9;
         prev = start > 1;
-        end = totalPage > tempEnd ? tempEnd : totalPage;
+        end = totalPage > tempEnd ? tempEnd: totalPage;
         next = totalPage > tempEnd;
-        pageList = IntStream.rangeClosed(start, end).boxed().collect(Collectors.toList());
+        pageList = IntStream.rangeClosed(start, end).boxed().
+                collect(Collectors.toList());
     }
+
 }
